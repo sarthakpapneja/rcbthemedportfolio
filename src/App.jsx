@@ -26,25 +26,22 @@ body{font-family:'Barlow',sans-serif;background:#080000;color:#f0e8e0;overflow-x
   --gglow:0 0 28px rgba(255,215,0,0.5);
 }
 
-/* FIRE CANVAS */
-#fire-canvas{position:fixed;inset:0;pointer-events:none;z-index:0;}
+/* Static ambient glow (no canvas = smooth) */
+.fire-ambient{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 120% 60% at 50% 100%,rgba(204,0,0,0.06) 0%,transparent 50%);
+}
 
-/* STADIUM TEXTURE */
+/* STADIUM TEXTURE - simplified gradients */
 .stadium{
   min-height:100vh;
   background:
-    radial-gradient(ellipse at 50% -10%,rgba(204,0,0,0.12) 0%,transparent 55%),
-    radial-gradient(ellipse at 20% 50%,rgba(204,0,0,0.04) 0%,transparent 40%),
-    radial-gradient(ellipse at 80% 50%,rgba(204,0,0,0.04) 0%,transparent 40%),
-    repeating-linear-gradient(
-      0deg,transparent,transparent 3px,
-      rgba(255,255,255,0.008) 3px,rgba(255,255,255,0.008) 4px
-    ),
+    radial-gradient(ellipse at 50% -10%,rgba(204,0,0,0.1) 0%,transparent 50%),
     var(--void);
   position:relative;
 }
 
-/* FLOODLIGHTS */
+/* FLOODLIGHTS - run once, then static */
 .floodlight{
   position:fixed;top:0;pointer-events:none;z-index:1;
   width:3px;height:100vh;
@@ -72,18 +69,17 @@ body{font-family:'Barlow',sans-serif;background:#080000;color:#f0e8e0;overflow-x
 }
 .ticker-inner{
   display:inline-block;
-  animation:tick 35s linear infinite;
+  animation:tick 55s linear infinite;
   font-family:'Share Tech Mono',monospace;
   font-size:0.72rem;letter-spacing:0.08em;color:#fff;
 }
-@keyframes tick{from{transform:translateX(100vw);}to{transform:translateX(-100%);}}
+@keyframes tick{from{transform:translate3d(100vw,0,0);}to{transform:translate3d(-100%,0,0);}}
 .t-sep{margin:0 28px;color:var(--gold);}
 
 /* NAV */
 .nav{
   position:sticky;top:0;z-index:300;
-  background:rgba(8,0,0,0.98);
-  backdrop-filter:blur(24px);
+  background:#080000;
   border-bottom:2px solid rgba(204,0,0,0.4);
   padding:0 48px;height:64px;
   display:flex;align-items:center;justify-content:space-between;
@@ -91,9 +87,8 @@ body{font-family:'Barlow',sans-serif;background:#080000;color:#f0e8e0;overflow-x
 .nav::after{
   content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
   background:linear-gradient(90deg,transparent,var(--gold),var(--red),var(--gold),transparent);
-  animation:navfire 2s ease-in-out infinite alternate;
+  opacity:0.7;
 }
-@keyframes navfire{0%{opacity:0.3;filter:blur(0px);}100%{opacity:1;filter:blur(0.5px);}}
 
 .nav-logo{
   font-family:'Bebas Neue',sans-serif;
@@ -105,11 +100,7 @@ body{font-family:'Barlow',sans-serif;background:#080000;color:#f0e8e0;overflow-x
 .rcb-emblem{
   width:36px;height:36px;position:relative;flex-shrink:0;
 }
-.rcb-emblem svg{animation:emblempulse 2s ease-in-out infinite;}
-@keyframes emblempulse{
-  0%,100%{filter:drop-shadow(0 0 4px rgba(204,0,0,0.6));}
-  50%{filter:drop-shadow(0 0 16px rgba(204,0,0,1)) drop-shadow(0 0 30px rgba(255,215,0,0.4));}
-}
+.rcb-emblem svg{opacity:0.95;}
 
 .nav-ul{display:flex;gap:4px;list-style:none;align-items:center;}
 .nav-ul a{
@@ -138,12 +129,13 @@ body{font-family:'Barlow',sans-serif;background:#080000;color:#f0e8e0;overflow-x
   border:1px solid rgba(255,255,255,0.05);
   border-top:2px solid var(--red);
   padding:40px 48px;position:relative;overflow:hidden;
+  content-visibility:auto;
+  contain-intrinsic-size:auto 200px;
 }
 .panel::after{content:'';position:absolute;bottom:0;right:0;width:120px;height:120px;background:radial-gradient(circle,rgba(204,0,0,0.06),transparent);pointer-events:none;}
 
-/* CORNER FIRE */
-.cf-corner{position:absolute;font-size:1.4rem;opacity:0.15;animation:cornerflame 1.5s ease-in-out infinite alternate;}
-@keyframes cornerflame{from{transform:scale(1) rotate(-5deg);}to{transform:scale(1.2) rotate(5deg);}}
+/* CORNER FIRE - static */
+.cf-corner{position:absolute;font-size:1.4rem;opacity:0.12;}
 .cf-tl{top:12px;left:16px;} .cf-tr{top:12px;right:16px;}
 .cf-bl{bottom:12px;left:16px;} .cf-br{bottom:12px;right:16px;}
 
@@ -165,10 +157,10 @@ body{font-family:'Barlow',sans-serif;background:#080000;color:#f0e8e0;overflow-x
   border:2px solid transparent;
   animation:ringspin linear infinite;
 }
-.ring1{border-color:rgba(204,0,0,0.6) transparent transparent transparent;animation-duration:4s;}
-.ring2{inset:14px;border-color:rgba(255,215,0,0.5) transparent transparent transparent;animation-duration:6s;animation-direction:reverse;}
-.ring3{inset:28px;border-color:rgba(204,0,0,0.3) transparent transparent transparent;animation-duration:8s;}
-@keyframes ringspin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+.ring1{border-color:rgba(204,0,0,0.6) transparent transparent transparent;animation-duration:8s;}
+.ring2{inset:14px;border-color:rgba(255,215,0,0.5) transparent transparent transparent;animation-duration:12s;animation-direction:reverse;}
+.ring2,.ring1{transform:translateZ(0);}
+@keyframes ringspin{from{transform:rotate(0deg) translateZ(0);}to{transform:rotate(360deg) translateZ(0);}}
 .ring-center{
   position:absolute;top:50%;left:50%;
   transform:translate(-50%,-50%);
@@ -232,9 +224,7 @@ body{font-family:'Barlow',sans-serif;background:#080000;color:#f0e8e0;overflow-x
   background:var(--red);color:#fff;
   font-family:'Share Tech Mono',monospace;font-size:0.56rem;
   letter-spacing:0.18em;padding:4px 12px;
-  animation:livepulse 1s ease-in-out infinite;
 }
-@keyframes livepulse{0%,100%{opacity:1;box-shadow:0 0 8px rgba(204,0,0,0.5);}50%{opacity:0.6;box-shadow:0 0 20px rgba(204,0,0,0.9);}}
 
 /* FIREBALL CANVAS */
 #ball-canvas{position:absolute;inset:0;pointer-events:none;z-index:5;}
@@ -249,12 +239,6 @@ body{font-family:'Barlow',sans-serif;background:#080000;color:#f0e8e0;overflow-x
   transition:all 0.2s;position:relative;overflow:hidden;
   animation:fadeup 0.8s 1.1s ease both;
 }
-.pb-btn::before{
-  content:'';position:absolute;top:-50%;left:-60%;width:40%;height:200%;
-  background:rgba(255,255,255,0.12);transform:skewX(-20deg);
-  animation:pbsheen 3s ease-in-out infinite;
-}
-@keyframes pbsheen{0%,100%{left:-60%;}50%{left:120%;}}
 .pb-btn:hover{transform:translateY(-4px) scale(1.03);box-shadow:0 8px 36px rgba(204,0,0,0.7);}
 .pb-btn:active{transform:translateY(0) scale(0.98);}
 
@@ -306,9 +290,7 @@ body{font-family:'Barlow',sans-serif;background:#080000;color:#f0e8e0;overflow-x
 .sk-bar-fill::after{
   content:'🔥';position:absolute;right:-2px;top:50%;
   transform:translateY(-50%);font-size:10px;
-  animation:flametip 0.6s ease-in-out infinite alternate;
 }
-@keyframes flametip{from{filter:brightness(1);}to{filter:brightness(1.5);}}
 .sk-tags{display:flex;flex-wrap:wrap;gap:5px;}
 .sk-tag{font-size:0.76rem;font-weight:300;color:#c0a898;border:1px solid rgba(204,0,0,0.2);padding:3px 9px;background:rgba(204,0,0,0.04);transition:all 0.18s;cursor:default;}
 .sk-tag:hover{background:rgba(204,0,0,0.12);border-color:rgba(204,0,0,0.5);color:#fff;}
@@ -320,7 +302,7 @@ body{font-family:'Barlow',sans-serif;background:#080000;color:#f0e8e0;overflow-x
   border:1px solid rgba(204,0,0,0.15);
   padding:18px;position:relative;overflow:hidden;
   display:flex;flex-direction:column;gap:8px;
-  transition:all 0.25s;cursor:default;
+  transition:transform 0.2s ease-out,border-color 0.2s,opacity 0.2s;cursor:default;
 }
 .match::before{
   content:'';position:absolute;inset:0;
@@ -332,7 +314,7 @@ body{font-family:'Barlow',sans-serif;background:#080000;color:#f0e8e0;overflow-x
   background:linear-gradient(90deg,var(--red),var(--gold),var(--red));
   opacity:0;transition:opacity 0.3s;
 }
-.match:hover{border-color:rgba(204,0,0,0.5);transform:translateY(-5px) scale(1.01);box-shadow:0 10px 40px rgba(204,0,0,0.2),0 0 30px rgba(255,215,0,0.05);}
+.match:hover{border-color:rgba(204,0,0,0.5);transform:translateY(-4px) scale(1.01);}
 .match:hover::before,.match:hover::after{opacity:1;}
 .m-format{font-family:'Share Tech Mono',monospace;font-size:0.52rem;color:var(--red3);letter-spacing:0.14em;text-transform:uppercase;}
 .m-title{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:#fff;line-height:1.2;letter-spacing:0.05em;}
@@ -364,8 +346,7 @@ body{font-family:'Barlow',sans-serif;background:#080000;color:#f0e8e0;overflow-x
   padding:14px 28px;text-align:center;
   display:flex;align-items:center;justify-content:center;gap:16px;
 }
-.champ-icon{font-size:1.8rem;animation:trophyspin 4s ease-in-out infinite alternate;}
-@keyframes trophyspin{from{transform:rotate(-5deg);filter:drop-shadow(0 0 6px rgba(255,215,0,0.4));}to{transform:rotate(5deg);filter:drop-shadow(0 0 16px rgba(255,215,0,0.9));}}
+.champ-icon{font-size:1.8rem;}
 .champ-title{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--gold);letter-spacing:0.14em;text-shadow:0 0 20px rgba(255,215,0,0.5);}
 .champ-body{padding:26px 30px;}
 .c-title{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:#fff;line-height:1.3;margin-bottom:9px;letter-spacing:0.04em;}
@@ -396,31 +377,91 @@ body{font-family:'Barlow',sans-serif;background:#080000;color:#f0e8e0;overflow-x
 .soc:hover{color:var(--red);padding-left:5px;}
 .soc-ic{width:32px;height:32px;background:rgba(204,0,0,0.08);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:var(--red);flex-shrink:0;}
 
-/* CROWD WAVE */
-.crowd-fixed{position:fixed;bottom:0;left:0;right:0;height:55px;pointer-events:none;z-index:0;overflow:hidden;}
-.crowd-p{position:absolute;bottom:0;border-radius:4px 4px 0 0;animation:cwave var(--d,2s) var(--dl,0s) ease-in-out infinite alternate;}
-@keyframes cwave{from{height:var(--h1,15px);opacity:0.3;}to{height:var(--h2,35px);opacity:0.8;}}
+/* CROWD - static gradient (no per-element animation) */
+.crowd-fixed{
+  position:fixed;bottom:0;left:0;right:0;height:48px;pointer-events:none;z-index:0;
+  background:linear-gradient(180deg,transparent 0%,rgba(204,0,0,0.08) 20%,rgba(255,68,34,0.12) 50%,rgba(255,215,0,0.06) 80%,transparent 100%);
+}
 
-/* EE SALA BANNER */
+/* EE SALA BANNER - static */
 .ee-sala{
   text-align:center;padding:28px;
   font-family:'Bebas Neue',sans-serif;
   font-size:clamp(1.5rem,4vw,3rem);
   color:var(--red);letter-spacing:0.16em;
-  text-shadow:0 0 30px rgba(204,0,0,0.6);
-  animation:eepulse 2s ease-in-out infinite alternate;
+  text-shadow:0 0 30px rgba(204,0,0,0.5);
   border-top:1px solid rgba(204,0,0,0.2);
   border-bottom:1px solid rgba(204,0,0,0.2);
   margin:40px 0;
 }
-@keyframes eepulse{from{text-shadow:0 0 20px rgba(204,0,0,0.4);}to{text-shadow:0 0 50px rgba(204,0,0,0.9),0 0 100px rgba(255,68,0,0.3);}}
 
 /* FOOTER */
 .foot{text-align:center;padding:44px 28px;position:relative;z-index:2;border-top:2px solid rgba(204,0,0,0.25);}
-.foot-fire{display:flex;justify-content:center;gap:8px;margin-bottom:14px;font-size:1.2rem;animation:footfire 1s ease-in-out infinite alternate;}
-@keyframes footfire{from{transform:scale(1);}to{transform:scale(1.1);}}
+.foot-fire{display:flex;justify-content:center;gap:8px;margin-bottom:14px;font-size:1.2rem;}
 .foot p{font-family:'Share Tech Mono',monospace;font-size:0.64rem;color:var(--muted);letter-spacing:0.14em;}
 .foot span{color:var(--red);}
+
+/* Scroll progress bar */
+.scroll-progress{
+  position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--red),var(--gold));
+  z-index:400;transform-origin:left;
+  transform:translateZ(0);
+}
+
+/* Active nav link */
+.nav-ul a.nav-active{color:var(--red)!important;border-color:var(--border);background:rgba(204,0,0,0.08);}
+
+/* Back to top */
+.back-top{
+  position:fixed;bottom:80px;right:24px;z-index:250;
+  width:48px;height:48px;border-radius:50%;
+  background:linear-gradient(135deg,var(--red),#aa0000);
+  border:2px solid var(--gold);
+  color:#fff;font-size:1.2rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 20px rgba(204,0,0,0.5);
+  opacity:0;visibility:hidden;transform:translateY(12px);
+  transition:opacity 0.25s, transform 0.25s, visibility 0.25s;
+}
+.back-top.visible{opacity:1;visibility:visible;transform:translateY(0);}
+.back-top:hover{transform:translateY(-4px) scale(1.05);box-shadow:0 8px 28px rgba(204,0,0,0.7);}
+
+/* Ticker pause on hover */
+.ticker.ticker-paused .ticker-inner{animation-play-state:paused;}
+
+/* Expandable match card */
+.match.expanded .m-desc{display:block;}
+.match .m-desc{transition:all 0.3s;}
+.match .expand-btn{
+  font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:var(--gold);
+  letter-spacing:0.1em;margin-top:6px;cursor:pointer;opacity:0.8;
+  background:none;border:none;padding:4px 0;align-self:flex-start;
+  transition:opacity 0.2s;
+}
+.match .expand-btn:hover{opacity:1;color:#fff;}
+.match.expanded .expand-btn::before{content:'▼ ';}
+.match:not(.expanded) .expand-btn::before{content:'▶ ';}
+
+/* Staggered match card entrance */
+.match-card-enter{opacity:0;transform:translateY(24px);}
+.match-card-enter.visible{opacity:1;transform:translateY(0);}
+
+/* Confetti container */
+.confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:600;}
+.confetti-dot{
+  position:absolute;width:8px;height:8px;border-radius:50%;
+  animation:confetti-fall 2.5s ease-out forwards;
+}
+
+@keyframes confetti-fall{
+  0%{opacity:1;transform:translateY(-20px) rotate(0deg);}
+  100%{opacity:0;transform:translateY(100vh) rotate(720deg);}
+}
+
+/* Scoreboard click to re-animate */
+.sb-item.clickable{cursor:pointer;}
+.sb-item.clickable .sb-val{transition:transform 0.2s;}
+.sb-item.clickable:hover .sb-val{transform:scale(1.08);}
 
 @media(max-width:820px){
   .nav{padding:0 16px;}
@@ -430,6 +471,7 @@ body{font-family:'Barlow',sans-serif;background:#080000;color:#f0e8e0;overflow-x
   .matches-grid{grid-template-columns:1fr;}
   .scoreboard{gap:16px;}
   .hero-name{font-size:19vw;}
+  .back-top{bottom:70px;right:16px;width:44px;height:44px;}
 }
 `;
 
@@ -476,62 +518,51 @@ const EXP = [
 
 const RKW=["Post-Quantum Crypto","SPHINCS+","IPFS","Verifiable Credentials","Decentralized Notary","Quantum-Resistant"];
 
-// ── Fire Canvas Particle System ──
-function FireCanvas() {
-  const ref = useRef(null);
+// ── Confetti (fewer particles for performance) ──
+function Confetti({ trigger }) {
+  const [particles, setParticles] = useState([]);
   useEffect(() => {
-    const canvas = ref.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let W, H, particles = [], raf;
-    const resize = () => {
-      W = canvas.width = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-    };
-    resize();
-    window.addEventListener('resize', resize);
-    const spawn = () => {
-      for (let i = 0; i < 2; i++) {
-        particles.push({
-          x: Math.random() * W,
-          y: H + 10,
-          vx: (Math.random() - 0.5) * 1.2,
-          vy: -(Math.random() * 2.5 + 1),
-          life: 1,
-          size: Math.random() * 3 + 1,
-          hue: Math.random() * 40,
-        });
-      }
-    };
-    const draw = () => {
-      ctx.clearRect(0, 0, W, H);
-      spawn();
-      particles = particles.filter(p => p.life > 0);
-      particles.forEach(p => {
-        p.x += p.vx; p.y += p.vy;
-        p.life -= 0.012;
-        p.vx += (Math.random() - 0.5) * 0.1;
-        const a = p.life * 0.4;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(${p.hue}, 100%, 55%, ${a})`;
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = `hsla(${p.hue}, 100%, 55%, ${a * 0.5})`;
-        ctx.fill();
-        ctx.shadowBlur = 0;
-      });
-      raf = requestAnimationFrame(draw);
-    };
-    draw();
-    return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', resize); };
-  }, []);
-  return <canvas ref={ref} id="fire-canvas" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0 }} />;
+    if (!trigger) return;
+    const colors = ['#cc0000', '#ff4422', '#ffd700', '#ffaa00', '#fff'];
+    const list = Array.from({ length: 22 }, (_, i) => ({
+      id: i,
+      left: Math.random() * 100,
+      color: colors[i % colors.length],
+      delay: Math.random() * 0.3,
+      duration: 2 + Math.random() * 0.8,
+      size: 6 + Math.random() * 4,
+    }));
+    setParticles(list);
+    const t = setTimeout(() => setParticles([]), 2800);
+    return () => clearTimeout(t);
+  }, [trigger]);
+  if (particles.length === 0) return null;
+  return (
+    <div className="confetti-wrap">
+      {particles.map(p => (
+        <div
+          key={p.id}
+          className="confetti-dot"
+          style={{
+            left: `${p.left}%`,
+            top: '50%',
+            background: p.color,
+            animationDelay: `${p.delay}s`,
+            animationDuration: `${p.duration}s`,
+            width: p.size,
+            height: p.size,
+          }}
+        />
+      ))}
+    </div>
+  );
 }
 
 // ── Fireball Canvas ──
 function FireballCanvas({ shoot, onDone }) {
   const ref = useRef(null);
   const raf = useRef(null);
+  const lastLabel = useRef('');
   useEffect(() => {
     if (!shoot) return;
     const canvas = ref.current;
@@ -588,6 +619,7 @@ function FireballCanvas({ shoot, onDone }) {
       ctx.lineWidth = 1.5;
       ctx.stroke();
       if (t === Math.floor(FRAMES * 0.45)) {
+        lastLabel.current = v.label;
         ctx.font = 'bold 20px Bebas Neue, sans-serif';
         ctx.fillStyle = v.color;
         ctx.shadowBlur = 10; ctx.shadowColor = v.color;
@@ -597,7 +629,7 @@ function FireballCanvas({ shoot, onDone }) {
       }
       t++;
       if (t < FRAMES + 15) raf.current = requestAnimationFrame(draw);
-      else { ctx.clearRect(0, 0, W, H); onDone && onDone(); }
+      else { ctx.clearRect(0, 0, W, H); onDone && onDone(lastLabel.current.includes('SIX')); }
     };
     raf.current = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(raf.current);
@@ -609,7 +641,7 @@ function FireballCanvas({ shoot, onDone }) {
   );
 }
 
-// ── Typewriter ──
+// ── Typewriter (throttled for smoothness) ──
 function Typewriter({ texts }) {
   const [display, setDisplay] = useState('');
   const [ti, setTi] = useState(0);
@@ -617,11 +649,11 @@ function Typewriter({ texts }) {
   const [deleting, setDeleting] = useState(false);
   useEffect(() => {
     const text = texts[ti];
-    const speed = deleting ? 40 : 80;
+    const speed = deleting ? 60 : 120;
     const t = setTimeout(() => {
       if (!deleting) {
         if (ci < text.length) { setDisplay(text.slice(0, ci + 1)); setCi(c => c + 1); }
-        else setTimeout(() => setDeleting(true), 1800);
+        else setTimeout(() => setDeleting(true), 2000);
       } else {
         if (ci > 0) { setDisplay(text.slice(0, ci - 1)); setCi(c => c - 1); }
         else { setDeleting(false); setTi(i => (i + 1) % texts.length); setCi(0); }
@@ -630,28 +662,6 @@ function Typewriter({ texts }) {
     return () => clearTimeout(t);
   }, [ci, deleting, ti, texts]);
   return <div className="typewriter">{display}<span className="tw-cursor">|</span></div>;
-}
-
-// ── Crowd ──
-function Crowd() {
-  const people = Array.from({ length: 80 }, (_, i) => ({
-    id: i, left: `${(i / 80) * 100}%`,
-    h1: 10 + Math.random() * 14, h2: 20 + Math.random() * 30,
-    dur: `${1 + Math.random() * 2}s`, del: `${(i / 80) * 4}s`,
-    color: ['#cc0000', '#ff4422', '#ffd700', '#ffffff', '#ff8800'][i % 5],
-  }));
-  return (
-    <div className="crowd-fixed">
-      {people.map(p => (
-        <div key={p.id} className="crowd-p" style={{
-          left: p.left, width: 7,
-          background: `linear-gradient(180deg,${p.color},transparent)`,
-          '--h1': `${p.h1}px`, '--h2': `${p.h2}px`,
-          '--d': p.dur, '--dl': p.del,
-        }} />
-      ))}
-    </div>
-  );
 }
 
 // ── Counter ──
@@ -666,13 +676,12 @@ function useCounter(target, dur = 1600, go = false) {
   return v;
 }
 
-// ── RCB Emblem ──
+// ── RCB Emblem (2 rings for performance) ──
 function RCBEmblem() {
   return (
     <div className="rcb-ring-wrap">
       <div className="ring ring1" />
       <div className="ring ring2" />
-      <div className="ring ring3" />
       <div className="ring-center">
         <div className="rc-num">18</div>
         <div className="rc-label">PLAY BOLD</div>
@@ -682,6 +691,8 @@ function RCBEmblem() {
 }
 
 // ── Main ──
+const SECTIONS = ['hero', 'about', 'projects', 'skills', 'experience', 'contact'];
+
 export default function Portfolio() {
   const [shooting, setShooting] = useState(false);
   const [statsVis, setStatsVis] = useState(false);
@@ -689,8 +700,16 @@ export default function Portfolio() {
   const [skillsFilled, setSkillsFilled] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [status, setStatus] = useState('');
+  const [scrollPct, setScrollPct] = useState(0);
+  const [backTopVisible, setBackTopVisible] = useState(false);
+  const [activeSection, setActiveSection] = useState('hero');
+  const [tickerPaused, setTickerPaused] = useState(false);
+  const [expandedProject, setExpandedProject] = useState(null);
+  const [confettiTrigger, setConfettiTrigger] = useState(0);
+  const [projectsVisible, setProjectsVisible] = useState(false);
   const heroRef = useRef(null);
   const skillsRef = useRef(null);
+  const projectsRef = useRef(null);
 
   const proj = useCounter(9, 1400, statsVis);
   const cgpa = useCounter(867, 1600, statsVis);
@@ -700,12 +719,60 @@ export default function Portfolio() {
   useEffect(() => {
     const o1 = new IntersectionObserver(([e]) => { if (e.isIntersecting) setStatsVis(true); }, { threshold: 0.3 });
     const o2 = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setSkillsVis(true); setTimeout(() => setSkillsFilled(true), 200); } }, { threshold: 0.2 });
+    const o3 = new IntersectionObserver(([e]) => { if (e.isIntersecting) setProjectsVisible(true); }, { threshold: 0.1 });
     if (heroRef.current) o1.observe(heroRef.current);
     if (skillsRef.current) o2.observe(skillsRef.current);
-    return () => { o1.disconnect(); o2.disconnect(); };
+    if (projectsRef.current) o3.observe(projectsRef.current);
+    return () => { o1.disconnect(); o2.disconnect(); o3.disconnect(); };
+  }, []);
+
+  useEffect(() => {
+    let rafId = null;
+    const onScroll = () => {
+      if (rafId != null) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        const y = window.scrollY;
+        const docH = document.documentElement.scrollHeight - window.innerHeight;
+        setScrollPct(docH > 0 ? Math.min((y / docH) * 100, 100) : 0);
+        setBackTopVisible(y > 400);
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      if (rafId != null) cancelAnimationFrame(rafId);
+    };
+  }, []);
+
+  useEffect(() => {
+    let ticking = false;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          ticking = false;
+          for (const e of entries) {
+            if (e.isIntersecting) setActiveSection(e.target.id);
+          }
+        });
+      },
+      { threshold: 0.2, rootMargin: '-60px 0px -20% 0px' }
+    );
+    SECTIONS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
   }, []);
 
   const fireShot = () => { if (shooting) return; setShooting(true); };
+  const handleFireballDone = (isSix) => {
+    setShooting(false);
+    if (isSix) setConfettiTrigger(c => c + 1);
+  };
 
   const upd = (k, v) => setForm(f => ({ ...f, [k]: v }));
   const submit = async (e) => {
@@ -718,8 +785,11 @@ export default function Portfolio() {
 
   return (<>
     <style>{CSS}</style>
-    <FireCanvas />
-    <Crowd />
+    <div className="scroll-progress" style={{ transform: `translateZ(0) scaleX(${scrollPct / 100})` }} />
+    <div className="fire-ambient" />
+    <div className="crowd-fixed" />
+    <Confetti trigger={confettiTrigger} />
+    <button type="button" className={`back-top ${backTopVisible ? 'visible' : ''}`} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} aria-label="Back to top">↑</button>
 
     {/* FLOODLIGHTS */}
     <div className="floodlight fl-l" />
@@ -728,7 +798,7 @@ export default function Portfolio() {
     <div className="floodlight fl-r2" />
 
     {/* TICKER */}
-    <div className="ticker">
+    <div className={`ticker ${tickerPaused ? 'ticker-paused' : ''}`} onMouseEnter={() => setTickerPaused(true)} onMouseLeave={() => setTickerPaused(false)}>
       <div className="ticker-inner">{TICKER_TEXT}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{TICKER_TEXT}</div>
     </div>
 
@@ -747,11 +817,12 @@ export default function Portfolio() {
           SP · RCB
         </a>
         <ul className="nav-ul">
-          <li><a href="#about">Player</a></li>
-          <li><a href="#projects">Innings</a></li>
-          <li><a href="#skills">Skills</a></li>
-          <li><a href="#experience">Career</a></li>
-          <li><a href="#contact">Sign</a></li>
+          <li><a href="#hero" className={activeSection === 'hero' ? 'nav-active' : ''}>Player</a></li>
+          <li><a href="#about" className={activeSection === 'about' ? 'nav-active' : ''}>About</a></li>
+          <li><a href="#projects" className={activeSection === 'projects' ? 'nav-active' : ''}>Innings</a></li>
+          <li><a href="#skills" className={activeSection === 'skills' ? 'nav-active' : ''}>Skills</a></li>
+          <li><a href="#experience" className={activeSection === 'experience' ? 'nav-active' : ''}>Career</a></li>
+          <li><a href="#contact" className={activeSection === 'contact' ? 'nav-active' : ''}>Sign</a></li>
           <li><a href="https://drive.google.com/file/d/1u3hQLi61BAbKneym4_QYbEXHYJYvHuio/view?usp=sharing" target="_blank" rel="noreferrer" className="nav-res">Résumé</a></li>
         </ul>
       </nav>
@@ -760,7 +831,7 @@ export default function Portfolio() {
 
         {/* ── HERO ── */}
         <section className="hero" id="hero" ref={heroRef} style={{ position: 'relative' }}>
-          <FireballCanvas shoot={shooting} onDone={() => setShooting(false)} />
+          <FireballCanvas shoot={shooting} onDone={handleFireballDone} />
 
           <RCBEmblem />
           <Typewriter texts={["EE SALA CUP NAMDE 🔴", "PLAY BOLD 🔥", "IN VIRAT WE TRUST ⚡", "AVAILABLE 2026 🏏"]} />
